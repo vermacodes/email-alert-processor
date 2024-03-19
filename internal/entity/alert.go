@@ -6,7 +6,7 @@ type Alert struct {
 	AlertMessage string `json:"alertMessage"`
 }
 
-type ALertResponse struct {
+type AlertResponse struct {
 	AlertID      string   `json:"alertId"`
 	AlertType    string   `json:"alertType"`
 	AlertMessage string   `json:"alertMessage"`
@@ -14,5 +14,5 @@ type ALertResponse struct {
 }
 
 type AlertService interface {
-	ProcessAlert(alert Alert) (Alert, error)
+	ProcessAlert(alert Alert) ([]AlertResponse, error)
 }

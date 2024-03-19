@@ -6,10 +6,10 @@ import (
 	"github.com/vermacodes/email-alert-processor/internal/entity"
 )
 
-func highVolumeReview(alert entity.Alert) ([]entity.ALertResponse, error) {
+func highVolumeReview(alert entity.Alert) ([]entity.AlertResponse, error) {
 	slog.Info("Processing CaseHygiene alert")
 
-	alertResponses := []entity.ALertResponse{}
+	alertResponses := []entity.AlertResponse{}
 
 	decodedAlertMessage, err := decodeBase64(alert.AlertMessage)
 	if err != nil {
@@ -40,7 +40,7 @@ func highVolumeReview(alert entity.Alert) ([]entity.ALertResponse, error) {
 		slog.Info("IncidentStatus: ", slog.String("caseStatus", incident.IncidentStatus))
 		slog.Info("------------------------------------------------")
 
-		alertResponse := entity.ALertResponse{
+		alertResponse := entity.AlertResponse{
 			AlertID:      alert.ID,
 			AlertType:    alert.AlertType,
 			AlertMessage: alert.AlertMessage,
@@ -53,10 +53,10 @@ func highVolumeReview(alert entity.Alert) ([]entity.ALertResponse, error) {
 	return alertResponses, nil
 }
 
-func highImpactReview(alert entity.Alert) ([]entity.ALertResponse, error) {
+func highImpactReview(alert entity.Alert) ([]entity.AlertResponse, error) {
 	slog.Info("Processing CaseHygiene alert")
 
-	alertResponses := []entity.ALertResponse{}
+	alertResponses := []entity.AlertResponse{}
 
 	decodedAlertMessage, err := decodeBase64(alert.AlertMessage)
 	if err != nil {
@@ -87,7 +87,7 @@ func highImpactReview(alert entity.Alert) ([]entity.ALertResponse, error) {
 		slog.Info("IncidentStatus: ", slog.String("caseStatus", incident.IncidentStatus))
 		slog.Info("------------------------------------------------")
 
-		alertResponse := entity.ALertResponse{
+		alertResponse := entity.AlertResponse{
 			AlertID:      alert.ID,
 			AlertType:    alert.AlertType,
 			AlertMessage: alert.AlertMessage,

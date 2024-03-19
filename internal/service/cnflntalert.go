@@ -11,20 +11,20 @@ import (
 	"github.com/vermacodes/email-alert-processor/internal/entity"
 )
 
-func cnflntNewCaseAlert(alert entity.Alert) (entity.Alert, error) {
+func cnflntNewCaseAlert(alert entity.Alert) ([]entity.AlertResponse, error) {
 	// Process alert here.
 	// Alert message is base64 encoded HTML content. Decode it first.
 	decodedAlertMessage, err := decodeBase64(alert.AlertMessage)
 	if err != nil {
 		slog.Error("Error decoding base64 string: ", err)
-		return alert, err
+		return []entity.AlertResponse{}, err
 	}
 
 	// The alert is an HTML email, so we can use the HTML parser to extract the required information.
 	texts, err := extractTextFromHTML(decodedAlertMessage)
 	if err != nil {
 		slog.Error("Error extracting text from HTML: ", err)
-		return alert, err
+		return []entity.AlertResponse{}, err
 	}
 
 	// Now we can use the extracted texts to process the alert.
@@ -56,9 +56,16 @@ func cnflntNewCaseAlert(alert entity.Alert) (entity.Alert, error) {
 	htmlDoc.WriteString("</body></html>")
 
 	// Now htmlDoc.String() contains the HTML document.
-	alert.AlertMessage = htmlDoc.String()
 
-	return alert, nil
+	alertResponse := entity.AlertResponse{
+		AlertID:      alert.ID,
+		AlertType:    alert.AlertType,
+		AlertMessage: htmlDoc.String(),
+	}
+
+	alertResponses := []entity.AlertResponse{alertResponse}
+
+	return alertResponses, nil
 }
 
 func decodeBase64(s string) (string, error) {

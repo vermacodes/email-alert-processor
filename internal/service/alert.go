@@ -10,7 +10,7 @@ func NewAlertService() entity.AlertService {
 	return &alertService{}
 }
 
-func (s *alertService) ProcessAlert(alert entity.Alert) (entity.Alert, error) {
+func (s *alertService) ProcessAlert(alert entity.Alert) ([]entity.AlertResponse, error) {
 	switch alert.ID {
 	case "Confluent":
 		return cnflntNewCaseAlert(alert)
@@ -21,7 +21,7 @@ func (s *alertService) ProcessAlert(alert entity.Alert) (entity.Alert, error) {
 	case "HighVolume":
 		return highVolumeReview(alert)
 	default:
-		return alert, nil
+		return []entity.AlertResponse{}, nil
 	}
 }
 
