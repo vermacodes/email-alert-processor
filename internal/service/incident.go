@@ -2,28 +2,32 @@ package service
 
 import (
 	"log/slog"
+	"strings"
+
+	"golang.org/x/net/html"
 
 	"github.com/vermacodes/email-alert-processor/internal/entity"
 )
 
-func parseCaseBuddyEmail(encodedEmailBody string) ([]entity.Case, error) {
-  // Decode the base64 encoded email encodedEmailBody
-  decodedEmailBody, err := decodeBase64(encodedEmailBody)
-  if err != nil {
-    slog.Error("Error decoding base64 string: ", err)
-    return []entity.Case{}, err
-  }
-  // The email is an HTML email, so we can use the HTML parser to extract the required information.
-	doc, err := html.parse(strings.newreader(decodedEmailBody))
+func parseCaseBuddyEmail(encodedEmailBody string) ([]entity.Incident, error) {
+	// Decode the base64 encoded email encodedEmailBody
+	decodedEmailBody, err := decodeBase64(encodedEmailBody)
 	if err != nil {
-		return []entity.Case{}, err
+		slog.Error("Error decoding base64 string: ", err)
+		return []entity.Incident{}, err
+	}
+	// The email is an HTML email, so we can use the HTML parser to extract the required information.
+	doc, err := html.Parse(strings.NewReader(decodedEmailBody))
+	if err != nil {
+		return []entity.Incident{}, err
 	}
 
-	var cases []entity.Case
-	var f func(*html.node)
-	f = func(n *html.node) {
-		if n.type == html.elementnode && n.data == "tr" {
-			var case entity.Case
+	var incidents []entity.Incident
+	var f func(*html.Node)
+
+	f = func(n *html.Node) {
+		if n.Type == html.ElementNode && n.Data == "tr" {
+			var incident entity.Incident
 			tdCount := 0
 			for c := n.FirstChild; c != nil; c = c.NextSibling {
 				if c.Type == html.ElementNode && c.Data == "td" {
@@ -37,7 +41,7 @@ func parseCaseBuddyEmail(encodedEmailBody string) ([]entity.Case, error) {
 							// Get the case link
 							for _, attr := range c.FirstChild.Attr {
 								if attr.Key == "href" {
-									case.CaseLink = attr.Val
+									incident.IncidentLink = attr.Val
 									break
 								}
 							}
@@ -47,15 +51,15 @@ func parseCaseBuddyEmail(encodedEmailBody string) ([]entity.Case, error) {
 					}
 					switch tdCount {
 					case 1:
-						case.CaseNumber = data
+						incident.IncidentNumber = data
 					case 2:
-						case.CaseCreatedTime = data
+						incident.IncidentCreatedTime = data
 					case 3:
-						case.CustomerName = data
+						incident.IncidentCustomerName = data
 					case 4:
-						case.OwnerAlias = data
+						incident.IncidentOwnerAlias = data
 					case 5:
-						case.OwnerManagerAlias = data
+						incident.IncidentOwnerManagerAlias = data
 					}
 					tdCount++
 
@@ -63,7 +67,7 @@ func parseCaseBuddyEmail(encodedEmailBody string) ([]entity.Case, error) {
 				}
 			}
 			if tdCount > 0 {
-				cases = append(cases, case)
+				incidents = append(incidents, incident)
 			}
 		}
 		for c := n.FirstChild; c != nil; c = c.NextSibling {
@@ -71,5 +75,5 @@ func parseCaseBuddyEmail(encodedEmailBody string) ([]entity.Case, error) {
 		}
 	}
 	f(doc)
-	return cases, nil
+	return incidents, nil
 }
