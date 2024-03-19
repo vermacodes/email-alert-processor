@@ -12,8 +12,8 @@ type Element struct {
 type AdaptiveCard struct {
 	Type    string    `json:"type"`
 	Version string    `json:"version"`
-	Body    []Element `json:"body"`
 	Schema  string    `json:"$schema"`
+	Body    []Element `json:"body"`
 }
 
 type AdaptiveCardService struct{}
