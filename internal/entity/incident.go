@@ -10,4 +10,6 @@ type Incident struct {
 	IncidentIdleDuration      string `json:"incidentIdleDuration"`
 	IncidentStatus            string `json:"incidentStatus"`
 	IncidentCustomerName      string `json:"incidentCustomerName"`
+	IncidentProduct           string `json:"incidentProduct"`
+	IncidentSeverity          string `json:"incidentSeverity"`
 }
