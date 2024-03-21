@@ -16,8 +16,6 @@ func (s *alertService) ProcessAlert(alert entity.Alert) ([]entity.AlertResponse,
 	switch alert.ID {
 	case "Iridias":
 		return iridiasNewCaseAlert(alert)
-	case "CaseHygiene":
-		return caseHygiene(alert)
 	case "CaseBuddy":
 		return caseBuddyAlert(alert)
 	default:
@@ -26,8 +24,4 @@ func (s *alertService) ProcessAlert(alert entity.Alert) ([]entity.AlertResponse,
 		)
 		return []entity.AlertResponse{}, nil
 	}
-}
-
-func addTwoNumbers(a, b int) int {
-	return a + b
 }

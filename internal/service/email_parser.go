@@ -10,7 +10,7 @@ import (
 	"github.com/vermacodes/email-alert-processor/internal/entity"
 )
 
-func parseCaseBuddyAlert(alert string) ([]entity.Incident, error) {
+func parseCaseBuddyEmail(alert string) ([]entity.Incident, error) {
 	doc, err := html.Parse(strings.NewReader(alert))
 	if err != nil {
 		return []entity.Incident{}, err

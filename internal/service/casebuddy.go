@@ -17,7 +17,7 @@ func caseBuddyAlert(alert entity.Alert) ([]entity.AlertResponse, error) {
 		return []entity.AlertResponse{}, err
 	}
 
-	incidents, err := parseCaseBuddyAlert(string(decodedEmail))
+	incidents, err := parseCaseBuddyEmail(string(decodedEmail))
 	if err != nil {
 		slog.Error("Error parsing case buddy alert",
 			slog.String("alertId", alert.ID),
