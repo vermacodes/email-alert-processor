@@ -43,14 +43,3 @@ func iridiasNewCaseAlert(alert entity.Alert) ([]entity.AlertResponse, error) {
 
 	return alertResponses, nil
 }
-
-func decodeBase64(s string) (string, error) {
-	// Decode base64 encoded string here.
-	data, err := base64.StdEncoding.DecodeString(s)
-	if err != nil {
-		return "", err
-	}
-
-	// Convert byte array to string.
-	return string(data), nil
-}
