@@ -24,6 +24,12 @@ func parseCaseBuddyEmail(alert string) ([]entity.Incident, error) {
 			tdCount := 0
 			for c := n.FirstChild; c != nil; c = c.NextSibling {
 				if c.Type == html.ElementNode && c.Data == "td" {
+
+					if c.FirstChild == nil {
+						tdCount++
+						continue
+					}
+
 					var data string
 					if c.FirstChild.Data == "a" {
 						data = c.FirstChild.FirstChild.Data
