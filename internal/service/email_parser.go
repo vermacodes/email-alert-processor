@@ -135,18 +135,18 @@ func parseTextFromIridiasEmail(extractedEmailText []string) (entity.Incident, er
 	return incident, nil
 }
 
-func getFirstChildOfElementNode(doc *html.Node, data string) (string, error) {
-	if doc.Type == html.ElementNode && doc.Data == data && doc.FirstChild != nil {
-		var buf bytes.Buffer
-		err := html.Render(&buf, doc.FirstChild)
-		if err != nil {
-			return "", err
-		}
-		// slog.Info("Extracted text", slog.String("text", buf.String()))
-		return buf.String(), nil
-	}
-	return "", nil
-}
+//func getFirstChildOfElementNode(doc *html.Node, data string) (string, error) {
+//	if doc.Type == html.ElementNode && doc.Data == data && doc.FirstChild != nil {
+//		var buf bytes.Buffer
+//		err := html.Render(&buf, doc.FirstChild)
+//		if err != nil {
+//			return "", err
+//		}
+//		// slog.Info("Extracted text", slog.String("text", buf.String()))
+//		return buf.String(), nil
+//	}
+//	return "", nil
+//}
 
 func getNodesOfGivenDataType(doc *html.Node, dataType string) ([]*html.Node, error) {
 	// Loop through all nodes and find the nodes of given data type.
