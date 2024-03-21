@@ -15,7 +15,7 @@ func NewEmailAlertProcessingHandler(r *gin.RouterGroup, alertService entity.Aler
 		alertService: alertService,
 	}
 
-	r.POST("/cnflnt/new-case-alert", handler.processAlert)
+	r.POST("/iridias/new-case-alert", handler.processAlert)
 }
 
 func (h *EmailAlertProcessingHandler) processAlert(c *gin.Context) {

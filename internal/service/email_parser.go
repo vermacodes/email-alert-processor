@@ -66,22 +66,32 @@ func extractTextFromIridiasEmail(htmlContent string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	var texts []string
-	var f func(*html.Node)
-	f = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "p" {
-			var buf bytes.Buffer
-			err := html.Render(&buf, n)
-			if err != nil {
-				return
-			}
-			texts = append(texts, buf.String())
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			f(c)
-		}
+
+	// Get all the nodes of type p.
+	nodes, err := getNodesOfGivenDataType(doc, "p")
+	if err != nil {
+		return nil, err
 	}
-	f(doc)
+
+	var texts []string
+
+	for _, node := range nodes {
+		var buf bytes.Buffer
+		err := html.Render(&buf, node.FirstChild)
+		if err != nil {
+			return nil, err
+		}
+
+		text, err := getInnerMostTextFromFirstChild(node)
+		if err != nil {
+			return nil, err
+		}
+
+		texts = append(texts, text)
+
+		slog.Info("Extracted text", slog.String("text", text))
+	}
+
 	return texts, nil
 }
 
@@ -91,17 +101,21 @@ func parseTextFromIridiasEmail(extractedEmailText []string) (entity.Incident, er
 	for i := 0; i < len(extractedEmailText); i++ {
 		// Check if the current element is in the filters slice.
 		isFilter := false
+		filterValue := ""
 		for _, filter := range filters {
 			if strings.Contains(extractedEmailText[i], filter) {
+				slog.Info("Filter: ", slog.String("filter", filter))
 				isFilter = true
+				filterValue = filter
 				break
 			}
 		}
 
 		// If the current element is in the filters slice, add it and the next one to the HTML document.
 		if isFilter && i+1 < len(extractedEmailText) {
-			switch extractedEmailText[i] {
+			switch filterValue {
 			case "Ticket":
+				slog.Info("Ticket: ", slog.String("ticket", extractedEmailText[i+1]))
 				incident.IncidentNumber = extractedEmailText[i+1]
 			case "Severity":
 				incident.IncidentSeverity = extractedEmailText[i+1]
@@ -110,6 +124,7 @@ func parseTextFromIridiasEmail(extractedEmailText []string) (entity.Incident, er
 			case "Customer":
 				incident.IncidentCustomerName = extractedEmailText[i+1]
 			case "Product":
+				slog.Info("Product: ", slog.String("product", extractedEmailText[i+1]))
 				incident.IncidentProduct = extractedEmailText[i+1]
 			case "Created On":
 				incident.IncidentCreatedTime = extractedEmailText[i+1]
@@ -118,4 +133,55 @@ func parseTextFromIridiasEmail(extractedEmailText []string) (entity.Incident, er
 		}
 	}
 	return incident, nil
+}
+
+func getFirstChildOfElementNode(doc *html.Node, data string) (string, error) {
+	if doc.Type == html.ElementNode && doc.Data == data && doc.FirstChild != nil {
+		var buf bytes.Buffer
+		err := html.Render(&buf, doc.FirstChild)
+		if err != nil {
+			return "", err
+		}
+		// slog.Info("Extracted text", slog.String("text", buf.String()))
+		return buf.String(), nil
+	}
+	return "", nil
+}
+
+func getNodesOfGivenDataType(doc *html.Node, dataType string) ([]*html.Node, error) {
+	// Loop through all nodes and find the nodes of given data type.
+	var nodes []*html.Node
+
+	var f func(*html.Node)
+	f = func(n *html.Node) {
+		if n.Type == html.ElementNode && n.Data == dataType {
+			nodes = append(nodes, n)
+		}
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			f(c)
+		}
+	}
+
+	f(doc)
+
+	return nodes, nil
+}
+
+func getInnerMostTextFromFirstChild(doc *html.Node) (string, error) {
+	// Loop throught nodes and find the inner most text from the first child.
+	// If the first child is a text node, and got no children. return the data.
+
+	var f func(*html.Node) string
+	f = func(n *html.Node) string {
+		if n == nil {
+			return ""
+		}
+
+		if n.Type == html.TextNode && n.FirstChild == nil {
+			return n.Data
+		}
+		return f(n.FirstChild)
+	}
+
+	return f(doc), nil
 }

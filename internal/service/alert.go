@@ -1,6 +1,8 @@
 package service
 
 import (
+	"log/slog"
+
 	"github.com/vermacodes/email-alert-processor/internal/entity"
 )
 
@@ -12,8 +14,8 @@ func NewAlertService() entity.AlertService {
 
 func (s *alertService) ProcessAlert(alert entity.Alert) ([]entity.AlertResponse, error) {
 	switch alert.ID {
-	case "Confluent":
-		return cnflntNewCaseAlert(alert)
+	case "Iridias":
+		return iridiasNewCaseAlert(alert)
 	case "CaseHygiene":
 		return caseHygiene(alert)
 	case "HighImpact":
@@ -21,6 +23,9 @@ func (s *alertService) ProcessAlert(alert entity.Alert) ([]entity.AlertResponse,
 	case "HighVolume":
 		return highVolumeReview(alert)
 	default:
+		slog.Error("Not a valid alert type",
+			slog.String("alertId", alert.ID),
+		)
 		return []entity.AlertResponse{}, nil
 	}
 }

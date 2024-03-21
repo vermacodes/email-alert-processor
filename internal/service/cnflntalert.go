@@ -7,9 +7,12 @@ import (
 	"github.com/vermacodes/email-alert-processor/internal/entity"
 )
 
-func cnflntNewCaseAlert(alert entity.Alert) ([]entity.AlertResponse, error) {
+func iridiasNewCaseAlert(alert entity.Alert) ([]entity.AlertResponse, error) {
 	// Process alert here.
 	// Alert message is base64 encoded HTML content. Decode it first.
+
+	slog.Info("Iridias New Case Alert")
+
 	decodedAlertMessage, err := decodeBase64(alert.AlertMessage)
 	if err != nil {
 		slog.Error("Error decoding base64 string: ", err)
