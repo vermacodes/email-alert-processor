@@ -13,13 +13,13 @@ func iridiasNewCaseAlert(alert entity.Alert) ([]entity.AlertResponse, error) {
 
 	slog.Info("Iridias New Case Alert")
 
-	decodedAlertMessage, err := decodeBase64(alert.AlertMessage)
+	decodedAlertMessage, err := base64.StdEncoding.DecodeString(alert.AlertMessage)
 	if err != nil {
 		slog.Error("Error decoding base64 string: ", err)
 		return []entity.AlertResponse{}, err
 	}
 
-	extractedText, err := extractTextFromIridiasEmail(decodedAlertMessage)
+	extractedText, err := extractTextFromIridiasEmail(string(decodedAlertMessage))
 	if err != nil {
 		slog.Error("Error extracting text from Iridias email: ", err)
 		return []entity.AlertResponse{}, err

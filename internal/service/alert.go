@@ -18,10 +18,8 @@ func (s *alertService) ProcessAlert(alert entity.Alert) ([]entity.AlertResponse,
 		return iridiasNewCaseAlert(alert)
 	case "CaseHygiene":
 		return caseHygiene(alert)
-	case "HighImpact":
-		return highImpactReview(alert)
-	case "HighVolume":
-		return highVolumeReview(alert)
+	case "CaseBuddy":
+		return caseBuddyAlert(alert)
 	default:
 		slog.Error("Not a valid alert type",
 			slog.String("alertId", alert.ID),

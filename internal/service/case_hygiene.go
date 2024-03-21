@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/base64"
 	"log/slog"
 
 	"github.com/vermacodes/email-alert-processor/internal/entity"
@@ -11,13 +12,13 @@ func caseHygiene(alert entity.Alert) ([]entity.AlertResponse, error) {
 
 	alertResponses := []entity.AlertResponse{}
 
-	decodedAlertMessage, err := decodeBase64(alert.AlertMessage)
+	decodedAlertMessage, err := base64.StdEncoding.DecodeString(alert.AlertMessage)
 	if err != nil {
 		slog.Error("Error decoding base64 string: ", err)
 		return alertResponses, err
 	}
 
-	incidents, err := parseCaseBuddyAlert(decodedAlertMessage)
+	incidents, err := parseCaseBuddyAlert(string(decodedAlertMessage))
 	if err != nil {
 		slog.Error("Error parsing CaseBuddy alert: ", err)
 		return alertResponses, err

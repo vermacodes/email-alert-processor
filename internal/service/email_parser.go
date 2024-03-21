@@ -34,14 +34,18 @@ func parseCaseBuddyAlert(alert string) ([]entity.Incident, error) {
 					case 1:
 						incident.IncidentNumber = data
 					case 2:
-						incident.IncidentOwnerAlias = data
-					case 3:
 						incident.IncidentCreatedTime = data
+					case 3:
+						incident.IncidentCustomerName = data
 					case 4:
-						incident.IncidentState = data
+						incident.IncidentOwnerAlias = data
 					case 5:
-						incident.IncidentIdleDuration = data
+						incident.IncidentOwnerManagerAlias = data
 					case 6:
+						incident.IncidentState = data
+					case 7:
+						incident.IncidentIdleDuration = data
+					case 8:
 						incident.IncidentStatus = data
 					}
 					tdCount++
