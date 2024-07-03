@@ -22,3 +22,6 @@ go.work
 
 # temp directory
 tmp/
+
+# Ignore all dot files
+.*
