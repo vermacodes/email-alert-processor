@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+
 	"github.com/vermacodes/email-alert-processor/internal/entity"
 )
 
@@ -14,7 +15,7 @@ func NewEmailAlertProcessingHandler(r *gin.RouterGroup, alertService entity.Aler
 		alertService: alertService,
 	}
 
-	r.POST("/cnflnt/new-case-alert", handler.processAlert)
+	r.POST("/iridias/new-case-alert", handler.processAlert)
 }
 
 func (h *EmailAlertProcessingHandler) processAlert(c *gin.Context) {
@@ -24,11 +25,11 @@ func (h *EmailAlertProcessingHandler) processAlert(c *gin.Context) {
 		return
 	}
 
-	alert, err := h.alertService.ProcessAlert(alert)
+	alertResponses, err := h.alertService.ProcessAlert(alert)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Internal server error"})
 		return
 	}
 
-	c.JSON(200, alert)
+	c.JSON(200, alertResponses)
 }
